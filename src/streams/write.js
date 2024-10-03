@@ -3,7 +3,7 @@ import process from "node:process";
 
 const write = async () => {
   let fileStream = createWriteStream("./files/fileToWrite.txt");
-  process.stdin.pipe(fileStream);
+  process.stdin.pipe(fileStream)
 
 };
 
