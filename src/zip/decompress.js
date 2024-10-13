@@ -1,17 +1,25 @@
-import { createGunzip } from "node:zlib";
-import { pipeline } from "node:stream";
-import { createReadStream, createWriteStream } from "node:fs";
+import fs from "fs";
+import path from "path";
+import zlib from "zlib";
+import stream from "stream";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const pathToCompress = path.resolve(__dirname, "files", "fileToCompress.txt");
+const pathToZlib = path.resolve(__dirname, "files", "archive.gz");
 
 const decompress = async () => {
-  const gunzip = createGunzip();
-  const source = createReadStream("./files/archive.gz");
-  const destination = createWriteStream("./files/fileToCompress.txt");
+    const streamRead = fs.createReadStream(pathToZlib);
+    const streamWrite = fs.createWriteStream(pathToCompress);
+    const transform = zlib.createUnzip();
 
-  pipeline(source, gunzip, destination, (err) => {
-    if (err) {
-      console.error('An error occurred:', err);
-      process.exitCode = 1;
-    }
-  });
+    stream.pipeline(
+        streamRead,
+        transform,
+        streamWrite,
+        err => {
+            if (err) throw err;
+        });
 };
+
 await decompress();

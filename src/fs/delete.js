@@ -1,17 +1,16 @@
-import fs from "node:fs";
+import fs from "fs/promises";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const pathToDelete = path.resolve(__dirname, "files", "fileToRemove.txt");
 
 const remove = async () => {
-  fs.stat("./files/fileToRemove.txt", function (err) {
-    if (err) {
-      throw new Error("FS operation failed");
-    } else {
-      fs.unlink("./files/fileToRemove.txt", function (err) {
-        if (err) {
-          throw new Error(err);
-        }
-      });
+    try {
+        await fs.unlink(pathToDelete);
+    } catch {
+        throw new Error("FS operation failed");
     }
-  });
 };
 
 await remove();

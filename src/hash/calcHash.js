@@ -1,17 +1,22 @@
-import { createReadStream } from 'fs';
-import { createHash } from 'crypto';
+import path from "path";
+import { createHash } from "crypto";
+import { fileURLToPath } from "url";
+import { createReadStream } from "fs";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const pathRead = path.resolve(__dirname, "files", "fileToCalculateHashFor.txt");
 
 const calculateHash = async () => {
-    let fileStream = createReadStream('./files/fileToCalculateHashFor.txt');
-    let hash = createHash('sha256');
-    hash.setEncoding('hex');
-    
-    fileStream.on('end', function() {
-        hash.end();
-        console.log(hash.read());
+    const stream = createReadStream(pathRead);
+    const hash = createHash("sha256");
+
+    let data = "";
+    stream.on("data", (chunk) => (data += chunk));
+    stream.on("end", () => {
+        const resultString = hash.update(data).digest('hex');
+        console.log(resultString);
     });
-    
-    fileStream.pipe(hash);
+    stream.on("error", (error) => console.log("Error", error.message));
 };
 
 await calculateHash();

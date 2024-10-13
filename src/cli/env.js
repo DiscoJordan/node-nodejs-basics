@@ -1,8 +1,12 @@
 const parseEnv = () => {
-  const newKeys = Object.keys(process.env).map((key) => "RSS_" + key);
-  newKeys.forEach((key, id) =>
-    console.log(key + "=" + Object.values(process.env)[id] + ";")
-  );
+    let finalString = "";
+    const env = process.env;
+    const keysArray = Object.keys(env).filter((item) => item.startsWith("RSS_"));
+
+    for (let keyValue of keysArray) {
+        finalString += `${keyValue}=${env[keyValue]}; `;
+    }
+    console.log(finalString.slice(0, -2));
 };
 
 parseEnv();
